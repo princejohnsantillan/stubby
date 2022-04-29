@@ -5,6 +5,7 @@ namespace App\Commands;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 use App\Stubby;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
 class Generate extends Command
 {
@@ -13,17 +14,17 @@ class Generate extends Command
      *
      * @var string
      */
-    protected $signature = 'generate
+    protected $signature = "generate
         {stub : Stub to make a file out of}
         {filename : Filename for to save generated content}
-    ';
+    ";
 
     /**
      * The description of the command.
      *
      * @var string
      */
-    protected $description = 'Generate a file from a given stub';
+    protected $description = "Generate a file from a given stub";
 
     /**
      * Execute the console command.
@@ -32,12 +33,16 @@ class Generate extends Command
      */
     public function handle()
     {
-        $stub = $this->argument('stub');
-        $filename = $this->argument('filename');
+        $stub = $this->argument("stub");
+        $filename = $this->argument("filename");
 
-        $this->info('Generating file from '. $stub);
+        $this->info("Generating file from {$stub}");
 
-        $stubby = Stubby::stub($stub);
+        try {
+            $stubby = Stubby::stub($stub);
+        } catch (FileNotFoundException) {
+            return $this->error("Stub file not found");
+        }
 
         $values = [];
 

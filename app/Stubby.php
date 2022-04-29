@@ -5,7 +5,6 @@ namespace App;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Stringable;
 
 class Stubby
@@ -39,6 +38,7 @@ class Stubby
     public function generate(string $filename, array $values): bool
     {
         $content = $this->content;
+
         foreach ($values as $token => $value) {
             $content = Str::of($content->replace("{{ {$token} }}", $value));
         }
