@@ -3,8 +3,6 @@
 namespace App\Commands;
 
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\File;
-use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 use App\Stubby;
 
@@ -52,16 +50,5 @@ class Generate extends Command
         $stubby->generate($filename, $values);
 
         $this->info("Successfully generated {$filename}");
-    }
-
-    /**
-     * Define the command's schedule.
-     *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
-     * @return void
-     */
-    public function schedule(Schedule $schedule): void
-    {
-        // $schedule->command(static::class)->everyMinute();
     }
 }
