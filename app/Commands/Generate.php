@@ -36,8 +36,6 @@ class Generate extends Command
         $stub = $this->argument("stub");
         $filename = $this->argument("filename");
 
-        $this->info("Generating file from {$stub}");
-
         try {
             $stubby = Stubby::stub($stub);
         } catch (FileNotFoundException) {

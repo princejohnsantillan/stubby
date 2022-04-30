@@ -26,8 +26,6 @@ php stubby generate magic.stub FooBar.php
 ```
 The commnd-line will ask you to give a value for every token found in the stub file.
 ```txt
-Generating file from magic.stub
-
  Provide a value for {{ namespace }}:
  > App
 
