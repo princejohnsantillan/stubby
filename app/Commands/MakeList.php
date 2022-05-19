@@ -2,7 +2,10 @@
 
 namespace App\Commands;
 
+use App\Stubby;
+use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
 class MakeList extends Command
 {
@@ -29,13 +32,26 @@ class MakeList extends Command
     {
         $rows = [];
         foreach (config('stubs', []) as $stub => $options) {
+            $stubPath = data_get($options, "stub", "");
+
+            try {
+                $stubby = Stubby::stub($stubPath);
+            } catch (FileNotFoundException) {
+                continue;
+            }
+
+            $variables = collect($stubby->getTokens())
+                    ->map(fn ($token) => Str::between($token, '{{ ', ' }}'))
+                    ->implode(', ');
+
             $rows[] = [
                 $stub,
-                data_get($options, "stub", ""),
+                $stubPath,
+                $variables,
                 data_get($options, "description", ""),
             ];
         }
 
-        $this->table(['Stub', "Path", "Description"], $rows);
+        $this->table(['Stub', "Path", "Variables", "Description"], $rows);
     }
 }
