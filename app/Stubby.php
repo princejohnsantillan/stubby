@@ -43,6 +43,10 @@ class Stubby
             $content = Str::of($content->replace("{{ {$token} }}", $value));
         }
 
+        if (Str::contains($filename, '/')) {
+            File::ensureDirectoryExists(Str::beforeLast($filename, '/'));
+        }
+
         return File::put($filename, $content);
     }
 }

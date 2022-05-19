@@ -6,6 +6,7 @@ return [
         'defaults' => [
             'timestamp' => now()->toString()
         ],
+        'path' => 'samples/',
         'extension' => '.txt',
         'description' => 'This is a sample stub',
     ],

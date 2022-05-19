@@ -15,7 +15,7 @@ class Make extends Command
      * @var string
      */
     protected $signature = 'make
-        {type : Type of file stub to generate}
+        {stub : Preconfigured stub to generate}
         {filename : Filename of generated content}
     ';
 
@@ -33,6 +33,10 @@ class Make extends Command
      */
     public function handle()
     {
+        if ($this->option('list')) {
+            return $this->showList();
+        }
+
         /** @var string $type */
         $type = $this->argument('type');
 
@@ -70,9 +74,15 @@ class Make extends Command
             $values[$key] = $value;
         }
 
+        $path = data_get($options, 'path', "");
+
+        if ($path !== "") {
+            $path = Str::beforeLast($path, "/")."/";
+        }
+
         $extension = data_get($options, 'extension', "");
 
-        $stubby->generate(Str::before($filename, $extension).$extension, $values);
+        $stubby->generate($path.Str::before($filename, $extension).$extension, $values);
 
         $this->info("Successfully generated {$filename}");
     }
