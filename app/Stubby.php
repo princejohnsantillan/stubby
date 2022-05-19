@@ -27,31 +27,31 @@ class Stubby
         return new static($stub);
     }
 
-    public function getContent(): string
+    public function getRawContent(): string
     {
         return $this->content->toString();
     }
 
-    public function getTokens(): Collection
+    public function getRawTokens(): Collection
     {
         return $this->content->matchAll('/{{[a-zA-Z0-9 _|]+}}/')->unique();
     }
 
     public function interpretTokens(): Collection
     {
-        return $this->getTokens()->mapWithKeys(
+        return $this->getRawTokens()->mapWithKeys(
             function (string $token) {
-                $tokenMeta = Str::of($token)->between("{{", "}}")->explode("|");
+                $tokenParts = Str::of($token)->between("{{", "}}")->explode("|");
 
                 /** @var string $key */
-                $key = Str::of($tokenMeta->get(0))->remove(" ")->lower()->toString();
+                $key = Str::of($tokenParts->get(0))->remove(" ")->lower()->toString();
 
                 /** @var string $mutation */
-                $mutation = Str::of($tokenMeta->get(1, ""))->remove(" ")->lower()->toString();
+                $mutation = Str::of($tokenParts->get(1, ""))->remove(" ")->lower()->toString();
 
                 return [
-                    $key => [
-                        "token" => $token,
+                    $token => [
+                        "key" => $key,
                         "mutation" => StringMutation::tryFrom($mutation)
                     ]
                 ];
@@ -62,21 +62,20 @@ class Stubby
     public function generate(string $filename, Collection|array $values): bool
     {
         $content = $this->content;
-        $tokensMeta = $this->interpretTokens();
+        $tokens = $this->interpretTokens();
 
-        foreach ($values as $key => $value) {
-            $sanitizedKey = Str::of($key)->remove(" ")->lower()->toString();
-            $meta = $tokensMeta->only($sanitizedKey);
+        foreach ($tokens as $token => $meta) {
+            $key = $meta["key"];
 
-            if ($meta->isEmpty()) {
+            /** @var string $value */
+            $value = data_get($values, $key);
+
+            if ($value === null) {
                 continue;
             }
 
-            /** @var string $token */
-            $token = $meta->pluck("token")->get(0);
-
             /** @var StringMutation|null $mutation */
-            $mutation = $meta->pluck("mutation")->get(0);
+            $mutation = data_get($meta, 'mutation');
 
             $value = $mutation === null ? $value : $mutation->mutate($value);
 

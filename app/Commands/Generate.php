@@ -44,13 +44,10 @@ class Generate extends Command
 
         $values = [];
 
-        foreach ($stubby->interpretTokens() as $key => $meta) {
+        foreach ($stubby->interpretTokens()->pluck('key') as $key) {
             $value = $this->ask("Provide a value for $key");
 
-            /** @var StringMutation|null $mutation */
-            $mutation = $meta["mutation"];
-
-            $values[$key] = $mutation === null ? $value : $mutation->mutate($value);
+            $values[$key] = $value;
         }
 
         $stubby->generate($filename, $values);
