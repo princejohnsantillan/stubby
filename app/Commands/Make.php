@@ -70,7 +70,9 @@ class Make extends Command
             $values[$key] = $value;
         }
 
-        $stubby->generate($filename, $values);
+        $extension = data_get($options, 'extension', "");
+
+        $stubby->generate(Str::before($filename, $extension).$extension, $values);
 
         $this->info("Successfully generated {$filename}");
     }

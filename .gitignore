@@ -3,5 +3,3 @@
 /.vscode
 /.vagrant
 .phpunit.result.cache
-/config/stubs.php
-/stubs
