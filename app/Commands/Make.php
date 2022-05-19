@@ -59,15 +59,17 @@ class Make extends Command
 
         $values = data_get($options, 'defaults', []);
 
-        foreach ($stubby->getTokens() as $token) {
-            $key = Str::of($token)->between("{{ ", " }}")->toString();
-
+        foreach ($stubby->interpretTokens() as $key => $meta) {
             if (array_key_exists($key, $values)) {
                 continue;
             }
 
-            $value = $this->ask("Provide a value for {$token}");
-            $values[$key] = $value;
+            $value = $this->ask("Provide a value for $key");
+
+            /** @var StringMutation|null $mutation */
+            $mutation = $meta["mutation"];
+
+            $values[$key] = $mutation === null ? $value : $mutation->mutate($value);
         }
 
         $path = data_get($options, 'path', "");
