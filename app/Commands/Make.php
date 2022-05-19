@@ -2,29 +2,29 @@
 
 namespace App\Commands;
 
+use App\Stubby;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
-use App\Stubby;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
-class Generate extends Command
+class Make extends Command
 {
     /**
      * The signature of the command.
      *
      * @var string
      */
-    protected $signature = "generate
-        {stub : Stub to make a file out of}
-        {filename : Filename for generated content}
-    ";
+    protected $signature = 'make
+        {type : Type of file stub to generate}
+        {filename : Filename of generated content}
+    ';
 
     /**
      * The description of the command.
      *
      * @var string
      */
-    protected $description = "Generate a file from a given stub";
+    protected $description = 'Generate stubs out of pre-defined stubs';
 
     /**
      * Execute the console command.
@@ -33,8 +33,23 @@ class Generate extends Command
      */
     public function handle()
     {
-        $stub = $this->argument("stub");
-        $filename = $this->argument("filename");
+        /** @var string $type */
+        $type = $this->argument('type');
+
+        /** @var string $filename */
+        $filename = $this->argument('filename');
+
+        $options = data_get(config('stubs'), $type);
+
+        if ($options === null) {
+            return $this->error('Invalid type');
+        }
+
+        $stub = data_get($options, 'stub');
+
+        if ($stub === null) {
+            return $this->error('Stub is not defined');
+        }
 
         try {
             $stubby = Stubby::stub($stub);
@@ -42,10 +57,15 @@ class Generate extends Command
             return $this->error("Stub file not found");
         }
 
-        $values = [];
+        $values = data_get($options, 'defaults', []);
 
         foreach ($stubby->getTokens() as $token) {
             $key = Str::of($token)->between("{{ ", " }}")->toString();
+
+            if (array_key_exists($key, $values)) {
+                continue;
+            }
+
             $value = $this->ask("Provide a value for {$token}");
             $values[$key] = $value;
         }
