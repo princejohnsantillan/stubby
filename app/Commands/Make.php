@@ -33,20 +33,16 @@ class Make extends Command
      */
     public function handle()
     {
-        if ($this->option('list')) {
-            return $this->showList();
-        }
-
         /** @var string $type */
-        $type = $this->argument('type');
+        $stubKey = $this->argument('stub');
 
         /** @var string $filename */
         $filename = $this->argument('filename');
 
-        $options = data_get(config('stubs'), $type);
+        $options = data_get(config('stubs'), $stubKey);
 
         if ($options === null) {
-            return $this->error('Invalid type');
+            return $this->error('Invalid stub key');
         }
 
         $stub = data_get($options, 'stub');
@@ -82,7 +78,9 @@ class Make extends Command
 
         $extension = data_get($options, 'extension', "");
 
-        $stubby->generate($path.Str::before($filename, $extension).$extension, $values);
+        $filename = Str::contains($filename, "/") ? $filename : $path.$filename;
+
+        $stubby->generate(Str::before($filename, $extension).$extension, $values);
 
         $this->info("Successfully generated {$filename}");
     }
