@@ -40,9 +40,7 @@ class MakeList extends Command
                 continue;
             }
 
-            $variables = collect($stubby->getTokens())
-                    ->map(fn ($token) => Str::between($token, '{{ ', ' }}'))
-                    ->implode(', ');
+            $variables = $stubby->interpretTokens()->keys()->implode(', ');
 
             $rows[] = [
                 $stub,
