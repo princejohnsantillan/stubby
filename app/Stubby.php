@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Enums\ReservedKey;
 use Illuminate\Support\Str;
 use App\Enums\StringMutation;
 use Illuminate\Support\Collection;
@@ -34,7 +35,7 @@ class Stubby
 
     public function getRawTokens(): Collection
     {
-        return $this->content->matchAll('/{{[a-zA-Z0-9 _|]+}}/')->unique();
+        return $this->content->matchAll('/{{[a-zA-Z0-9 _|@]+}}/')->unique();
     }
 
     public function interpretTokens(): Collection
@@ -44,15 +45,15 @@ class Stubby
                 $tokenParts = Str::of($token)->between("{{", "}}")->explode("|");
 
                 /** @var string $key */
-                $key = Str::of($tokenParts->get(0))->remove(" ")->lower()->toString();
+                $key = Str::of($tokenParts->get(0))->remove(" ")->toString();
 
                 /** @var string $mutation */
-                $mutation = Str::of($tokenParts->get(1, ""))->remove(" ")->lower()->toString();
+                $mutation = Str::of($tokenParts->get(1, ""));
 
                 return [
                     $token => [
                         "key" => $key,
-                        "mutation" => StringMutation::tryFrom($mutation)
+                        "mutation" => StringMutation::find($mutation)
                     ]
                 ];
             }
@@ -67,8 +68,10 @@ class Stubby
         foreach ($tokens as $token => $meta) {
             $key = $meta["key"];
 
+            $value = ReservedKey::tryFrom($key)?->getValue(["FILENAME" => $filename]);
+
             /** @var string $value */
-            $value = data_get($values, $key);
+            $value = $value ?? data_get($values, $key);
 
             if ($value === null) {
                 continue;

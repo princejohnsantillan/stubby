@@ -2,6 +2,7 @@
 
 namespace App\Commands;
 
+use App\Enums\ReservedKey;
 use App\Enums\StringMutation;
 use App\Stubby;
 use Illuminate\Support\Str;
@@ -60,8 +61,13 @@ class Make extends Command
 
         $values = data_get($options, 'defaults', []);
 
+        /** @var string $key */
         foreach ($stubby->interpretTokens()->pluck('key') as $key) {
             if (array_key_exists($key, $values)) {
+                continue;
+            }
+
+            if (ReservedKey::tryFrom($key) !== null) {
                 continue;
             }
 
@@ -80,13 +86,12 @@ class Make extends Command
         // File Name
         $filename = Str::of($filename)->afterLast("/")->before($extension)->trim()->toString();
 
-        $filenameCase = Str::of(data_get($options, 'filename_case', ""))->remove(" ")->lower()->toString();
+        $filenameCase = Str::of(data_get($options, 'filename_case', ""));
 
-        $filenameMutation = StringMutation::tryFrom($filenameCase);
+        $filenameMutation = StringMutation::find($filenameCase);
 
         $filename = $filenameMutation === null ? $filename : $filenameMutation->mutate($filename);
 
-        dump($path, $filename, $extension);
 
         // File Generate
         $stubby->generate($path.$filename.$extension, $values);

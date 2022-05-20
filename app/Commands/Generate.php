@@ -2,9 +2,10 @@
 
 namespace App\Commands;
 
+use App\Stubby;
+use App\Enums\ReservedKey;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
-use App\Stubby;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
 class Generate extends Command
@@ -44,7 +45,12 @@ class Generate extends Command
 
         $values = [];
 
+        /** @var string $key */
         foreach ($stubby->interpretTokens()->pluck('key') as $key) {
+            if (ReservedKey::tryFrom($key) !== null) {
+                continue;
+            }
+
             $value = $this->ask("Provide a value for $key");
 
             $values[$key] = $value;

@@ -21,6 +21,11 @@ enum StringMutation: string
     case UPPER_FIRST = "ucfirst";
     case UPPER = "upper";
 
+    public static function find(string $name): ?static
+    {
+        return StringMutation::tryFrom(Str::of($name)->remove(" ")->lower()->toString());
+    }
+
     public function mutate(string $value) : string
     {
         return match ($this) {
