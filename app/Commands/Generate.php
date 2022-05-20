@@ -47,7 +47,7 @@ class Generate extends Command
 
         /** @var string $key */
         foreach ($stubby->interpretTokens()->pluck('key') as $key) {
-            if (ReservedKey::tryFrom($key) !== null) {
+            if (ReservedKey::exists($key)) {
                 continue;
             }
 
