@@ -2,6 +2,7 @@
 
 namespace App\Commands;
 
+use App\Enums\StringMutation;
 use App\Stubby;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
@@ -69,17 +70,26 @@ class Make extends Command
             $values[$key] = $value;
         }
 
-        $path = data_get($options, 'path', "");
+        // File Path
+        $path = Str::of(data_get($options, 'path', ""))->trim()->rtrim("/")->toString();
+        $path = $path !== "" ? $path."/" : "";
 
-        if ($path !== "") {
-            $path = Str::beforeLast($path, "/")."/";
-        }
+        // File Extenstion
+        $extension = Str::of(data_get($options, 'extension', ""))->trim()->lower()->toString(); //TBD: improve extension case sensitivity
 
-        $extension = data_get($options, 'extension', "");
+        // File Name
+        $filename = Str::of($filename)->afterLast("/")->before($extension)->trim()->toString();
 
-        $filename = Str::contains($filename, "/") ? $filename : $path.$filename;
+        $filenameCase = Str::of(data_get($options, 'filename_case', ""))->remove(" ")->lower()->toString();
 
-        $stubby->generate(Str::before($filename, $extension).$extension, $values);
+        $filenameMutation = StringMutation::tryFrom($filenameCase);
+
+        $filename = $filenameMutation === null ? $filename : $filenameMutation->mutate($filename);
+
+        dump($path, $filename, $extension);
+
+        // File Generate
+        $stubby->generate($path.$filename.$extension, $values);
 
         $this->info("Successfully generated {$filename}");
     }
