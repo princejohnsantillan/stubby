@@ -68,7 +68,7 @@ class Stubby
         foreach ($tokens as $token => $meta) {
             $key = $meta["key"];
 
-            $value = ReservedKey::tryFrom($key)?->getValue(["FILENAME" => $filename]);
+            $value = ReservedKey::tryFrom($key)?->interpret([ReservedKey::FILENAME->value => $filename]);
 
             /** @var string $value */
             $value = $value ?? data_get($values, $key);

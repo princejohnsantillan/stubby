@@ -2,6 +2,7 @@
 
 namespace App\Commands;
 
+use App\Enums\ReservedKey;
 use App\Stubby;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
@@ -40,7 +41,11 @@ class MakeList extends Command
                 continue;
             }
 
-            $variables = $stubby->interpretTokens()->keys()->implode(', ');
+            $variables = $stubby->interpretTokens()
+                ->pluck('key')
+                ->unique()
+                ->reject(fn ($key) => in_array($key, ReservedKey::values()))
+                ->implode(", ");
 
             $rows[] = [
                 $stub,
