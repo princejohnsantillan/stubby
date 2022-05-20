@@ -2,10 +2,11 @@
 
 namespace App\Commands;
 
-use App\Enums\ReservedKey;
-use App\Enums\StringMutation;
 use App\Stubby;
+use App\Enums\ReservedKey;
 use Illuminate\Support\Str;
+use App\Enums\StringMutation;
+use Illuminate\Support\Facades\File;
 use LaravelZero\Framework\Commands\Command;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
@@ -19,6 +20,7 @@ class Make extends Command
     protected $signature = 'make
         {stub : Preconfigured stub to generate}
         {filename : Filename of generated content}
+        {--config= : Define custom configutation}
     ';
 
     /**
@@ -35,13 +37,20 @@ class Make extends Command
      */
     public function handle()
     {
+        $configOption = $this->option('config') ?? "stubs/config.json";
+        if (filled($configOption) && File::exists($configOption)) {
+            $config = json_decode(File::get($configOption), true);
+        } else {
+            $config = config('stubs');
+        }
+
         /** @var string $type */
         $stubKey = $this->argument('stub');
 
         /** @var string $filename */
         $filename = $this->argument('filename');
 
-        $options = data_get(config('stubs'), $stubKey);
+        $options = data_get($config, $stubKey);
 
         if ($options === null) {
             return $this->error('Invalid stub key');
