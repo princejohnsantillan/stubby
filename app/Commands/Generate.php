@@ -4,7 +4,6 @@ namespace App\Commands;
 
 use App\Stubby;
 use App\Enums\ReservedKey;
-use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 

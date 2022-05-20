@@ -38,7 +38,8 @@ class Make extends Command
     public function handle()
     {
         $configOption = $this->option('config') ?? "stubs/config.json";
-        if (filled($configOption) && File::exists($configOption)) {
+
+        if (File::exists($configOption)) {
             $config = json_decode(File::get($configOption), true);
         } else {
             $config = config('stubs');

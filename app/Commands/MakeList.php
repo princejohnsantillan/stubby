@@ -2,9 +2,10 @@
 
 namespace App\Commands;
 
-use App\Enums\ReservedKey;
 use App\Stubby;
+use App\Enums\ReservedKey;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 use LaravelZero\Framework\Commands\Command;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
@@ -15,7 +16,9 @@ class MakeList extends Command
      *
      * @var string
      */
-    protected $signature = 'make:list';
+    protected $signature = 'make:list
+        {--config= : Define custom configutation}
+    ';
 
     /**
      * The description of the command.
@@ -31,8 +34,16 @@ class MakeList extends Command
      */
     public function handle()
     {
+        $configOption = $this->option('config') ?? "stubs/config.json";
+
+        if (File::exists($configOption)) {
+            $config = json_decode(File::get($configOption), true);
+        } else {
+            $config = config('stubs', []);
+        }
+
         $rows = [];
-        foreach (config('stubs', []) as $stub => $options) {
+        foreach ($config as $stub => $options) {
             $stubPath = data_get($options, "stub", "");
 
             try {
