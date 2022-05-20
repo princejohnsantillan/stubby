@@ -76,7 +76,7 @@ class Make extends Command
                 continue;
             }
 
-            if (ReservedKey::exists($key)) {
+            if (ReservedKey::valueExists($key)) {
                 continue;
             }
 

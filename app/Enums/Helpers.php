@@ -56,4 +56,9 @@ trait Helpers
     {
         return in_array($case, static::names());
     }
+
+    public static function valueExists($case): bool
+    {
+        return in_array($case, static::values());
+    }
 }
