@@ -50,7 +50,7 @@ class Generate extends Command
                 continue;
             }
 
-            $value = $this->ask("Provide a value for $key");
+            $value = $this->ask("Provide a value for \"$key\"");
 
             $values[$key] = $value;
         }

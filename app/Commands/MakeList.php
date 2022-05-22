@@ -4,8 +4,7 @@ namespace App\Commands;
 
 use App\Stubby;
 use App\Enums\ReservedKey;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\File;
+use App\StubbyConfig;
 use LaravelZero\Framework\Commands\Command;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
@@ -34,16 +33,10 @@ class MakeList extends Command
      */
     public function handle()
     {
-        $configOption = $this->option('config') ?? "stubs/config.json";
-
-        if (File::exists($configOption)) {
-            $config = json_decode(File::get($configOption), true);
-        } else {
-            $config = config('stubs', []);
-        }
+        $config = new StubbyConfig($this->option('config') ?? "stubs/config.json");
 
         $rows = [];
-        foreach ($config as $stub => $options) {
+        foreach ($config->stubs() as $stub => $options) {
             $stubPath = data_get($options, "stub", "");
 
             try {

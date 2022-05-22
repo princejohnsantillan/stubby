@@ -3,6 +3,7 @@
 namespace App\Commands;
 
 use App\Stubby;
+use App\StubbyConfig;
 use App\Enums\ReservedKey;
 use Illuminate\Support\Str;
 use App\Enums\StringMutation;
@@ -37,27 +38,21 @@ class Make extends Command
      */
     public function handle()
     {
-        $configOption = $this->option('config') ?? "stubs/config.json";
+        $config = new StubbyConfig($this->option('config') ?? "stubs/config.json");
 
-        if (File::exists($configOption)) {
-            $config = json_decode(File::get($configOption), true);
-        } else {
-            $config = config('stubs');
-        }
-
-        /** @var string $type */
+        /** @var string $stubKey */
         $stubKey = $this->argument('stub');
 
         /** @var string $filename */
         $filename = $this->argument('filename');
 
-        $options = data_get($config, $stubKey);
+        $schema = $config->schemaOf($stubKey);
 
-        if ($options === null) {
+        if ($schema === null) {
             return $this->error('Invalid stub key');
         }
 
-        $stub = data_get($options, 'stub');
+        $stub = data_get($schema, 'stub');
 
         if ($stub === null) {
             return $this->error('Stub is not defined');
@@ -69,7 +64,7 @@ class Make extends Command
             return $this->error("Stub file not found");
         }
 
-        $values = data_get($options, 'defaults', []);
+        $values = data_get($schema, 'defaults', []);
 
         /** @var string $key */
         foreach ($stubby->interpretTokens()->pluck('key') as $key) {
@@ -87,16 +82,16 @@ class Make extends Command
         }
 
         // File Path
-        $path = Str::of(data_get($options, 'path', ""))->trim()->rtrim("/")->toString();
+        $path = Str::of(data_get($schema, 'path', ""))->trim()->rtrim("/")->toString();
         $path = $path !== "" ? $path."/" : "";
 
         // File Extenstion
-        $extension = Str::of(data_get($options, 'extension', ""))->trim()->lower()->toString(); //TBD: improve extension case sensitivity
+        $extension = Str::of(data_get($schema, 'extension', ""))->trim()->lower()->toString(); //TBD: improve extension case sensitivity
 
         // File Name
         $filename = Str::of($filename)->afterLast("/")->before($extension)->trim()->toString();
 
-        $filenameCase = Str::of(data_get($options, 'filename_case', ""));
+        $filenameCase = Str::of(data_get($schema, 'filename_case', ""));
 
         $filenameMutation = StringMutation::find($filenameCase);
 
