@@ -22,6 +22,7 @@ class Make extends Command
         {stub : Preconfigured stub to generate}
         {filename : Filename of generated content}
         {--config= : Define custom configutation}
+        {--values= : Define variable values}
     ';
 
     /**
@@ -65,6 +66,22 @@ class Make extends Command
         }
 
         $values = data_get($schema, 'defaults', []);
+
+        foreach (Str::of($this->option("values") ?? "")->explode(",")->filter() as $value) {
+            $parts = Str::of($value)->explode(":")->filter();
+
+            /** @var string $key */
+            $key = $parts->get(0);
+
+            /** @var string $value */
+            $value = $parts->get(1);
+
+            if ($key === null || $value === null) {
+                continue;
+            }
+
+            $values[$key] = $value;
+        }
 
         /** @var string $key */
         foreach ($stubby->interpretTokens()->pluck('key') as $key) {

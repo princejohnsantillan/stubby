@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use App\Stubby;
 use App\Enums\ReservedKey;
+use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
@@ -17,6 +18,7 @@ class Generate extends Command
     protected $signature = "generate
         {stub : Stub to make a file out of}
         {filename : Filename for generated content}
+        {--values= : Define variable values}
     ";
 
     /**
@@ -44,8 +46,29 @@ class Generate extends Command
 
         $values = [];
 
+        foreach (Str::of($this->option("values") ?? "")->explode(",")->filter() as $value) {
+            $parts = Str::of($value)->explode(":")->filter();
+
+            /** @var string $key */
+            $key = $parts->get(0);
+
+            /** @var string $value */
+            $value = $parts->get(1);
+
+            if ($key === null || $value === null) {
+                continue;
+            }
+
+            $values[$key] = $value;
+        }
+
+
         /** @var string $key */
         foreach ($stubby->interpretTokens()->pluck('key') as $key) {
+            if (array_key_exists($key, $values)) {
+                continue;
+            }
+
             if (ReservedKey::valueExists($key)) {
                 continue;
             }
