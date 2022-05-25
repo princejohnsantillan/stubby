@@ -19,10 +19,10 @@ class Make extends Command
      * @var string
      */
     protected $signature = 'make
-        {stub : Preconfigured stub to generate}
+        {build : Preconfigured build to generate}
         {filename : Filename of generated content}
-        {--config= : Define custom configutation}
         {--values= : Define variable values}
+        {--config= : Define custom config}
     ';
 
     /**
@@ -41,31 +41,25 @@ class Make extends Command
     {
         $config = new StubbyConfig($this->option('config') ?? "stubs/config.json");
 
-        /** @var string $stubKey */
-        $stubKey = $this->argument('stub');
+        /** @var string $build */
+        $build = $this->argument('build');
 
         /** @var string $filename */
-        $filename = $this->argument('filename');
+        $inputFilename = $this->argument('filename');
 
-        $schema = $config->schemaOf($stubKey);
+        $schema = $config->schemaOf($build);
 
         if ($schema === null) {
-            return $this->error('Invalid stub key');
+            return $this->error('Invalid build name');
         }
 
-        $stub = data_get($schema, 'stub');
+        $stubs = $config->stubsOf($build);
 
-        if ($stub === null) {
-            return $this->error('Stub is not defined');
+        if ($stubs === null) {
+            return $this->error('Stubs are not defined');
         }
 
-        try {
-            $stubby = Stubby::stub($stub);
-        } catch (FileNotFoundException) {
-            return $this->error("Stub file not found");
-        }
-
-        $values = data_get($schema, 'values', []);
+        $values = $config->valuesOf($build);
 
         foreach (Str::of($this->option("values") ?? "")->explode(",")->filter() as $value) {
             $parts = Str::of($value)->explode(":")->filter();
@@ -83,40 +77,55 @@ class Make extends Command
             $values[$key] = $value;
         }
 
-        /** @var string $variable */
-        foreach ($stubby->interpretTokens()->pluck("variable") as $variable) {
-            if (array_key_exists($variable, $values)) {
-                continue;
+        foreach ($stubs as $stub => $fileConfig) {
+            try {
+                $stubby = Stubby::stub($stub);
+            } catch (FileNotFoundException) {
+                return $this->error("Stub file not found: $stub");
             }
 
-            if (SpecialVariable::valueExists($variable)) {
-                continue;
+            /** @var string $variable */
+            foreach ($stubby->interpretTokens()->pluck("variable") as $variable) {
+                if (array_key_exists($variable, $values)) {
+                    continue;
+                }
+
+                if (SpecialVariable::valueExists($variable)) {
+                    continue;
+                }
+
+                $value = $this->ask("Provide a value for $variable");
+
+                $values[$variable] = $value;
             }
 
-            $value = $this->ask("Provide a value for $variable");
+            // File Path
+            $filePath = $config->filePathFrom($fileConfig);
 
-            $values[$variable] = $value;
+            // File Extenstion
+            $fileExtension = $config->fileExtensionFrom($fileConfig);
+
+            // File Name
+            $filename = Str::of($inputFilename)->afterLast("/")->before($fileExtension)->trim()->toString();
+
+            $filenameCase = $config->filenameCaseFrom($fileConfig);
+
+            $filenameMutation = StringMutation::find($filenameCase);
+
+            $filename = $filenameMutation === null ? $filename : $filenameMutation->mutate($filename);
+
+            // Filename Template
+            $filenameTemplate = $config->filenameTemplateFrom($fileConfig);
+
+            $filename =  $filenameTemplate === null
+                ? $filename
+                : Str::of($filenameTemplate)->replace(SpecialVariable::FILENAME(), $filename)->toString();
+
+            // File Generate
+            $file = $filePath.$filename.$fileExtension;
+            $stubby->generate($file, $values);
+
+            $this->info("Successfully generated {$file}");
         }
-
-        // File Path
-        $filePath = Str::of(data_get($schema, 'file_path', ""))->trim()->rtrim("/")->toString();
-        $filePath = $filePath !== "" ? $filePath."/" : "";
-
-        // File Extenstion
-        $fileExtension = Str::of(data_get($schema, 'file_extension', ""))->trim()->lower()->toString(); //TBD: improve extension case sensitivity
-
-        // File Name
-        $filename = Str::of($filename)->afterLast("/")->before($fileExtension)->trim()->toString();
-
-        $filenameCase = Str::of(data_get($schema, 'filename_case', ""));
-
-        $filenameMutation = StringMutation::find($filenameCase);
-
-        $filename = $filenameMutation === null ? $filename : $filenameMutation->mutate($filename);
-
-        // File Generate
-        $stubby->generate($filePath.$filename.$fileExtension, $values);
-
-        $this->info("Successfully generated {$filename}");
     }
 }

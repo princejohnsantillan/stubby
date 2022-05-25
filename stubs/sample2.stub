@@ -1,0 +1,2 @@
+Hello {{ title|Title }}, this is a sample stub.
+You generated this file on {{ timestamp }}
