@@ -1,2 +1,2 @@
-Hi {{ name }}, this is a sample stub.
+Hi {{ name|Title }}, this is a sample stub.
 You generated this file on {{ timestamp }}

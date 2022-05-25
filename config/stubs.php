@@ -3,13 +3,14 @@
 return [
     "stubs" => [
         'sample' => [
+            'description' => 'This is a sample stub',
             'stub' => 'stubs/sample.stub',
-            'defaults' => [
+            'values' => [
                 'timestamp' => now()->toString()
             ],
-            'path' => 'samples/',
-            'extension' => '.txt',
-            'description' => 'This is a sample stub',
+            'file_path' => 'samples/',
+            'file_extension' => '.txt',
+            'filename_case' => 'Studly',
         ],
     ]
 ];

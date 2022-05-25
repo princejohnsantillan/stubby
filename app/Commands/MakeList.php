@@ -3,7 +3,7 @@
 namespace App\Commands;
 
 use App\Stubby;
-use App\Enums\ReservedKey;
+use App\Enums\SpecialVariable;
 use App\StubbyConfig;
 use LaravelZero\Framework\Commands\Command;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
@@ -46,9 +46,9 @@ class MakeList extends Command
             }
 
             $variables = $stubby->interpretTokens()
-                ->pluck('key')
+                ->pluck("variable")
                 ->unique()
-                ->reject(fn ($key) => in_array($key, ReservedKey::values()))
+                ->reject(fn ($key) => in_array($key, SpecialVariable::values()))
                 ->implode(", ");
 
             $rows[] = [

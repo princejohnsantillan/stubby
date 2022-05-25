@@ -3,7 +3,7 @@
 namespace App\Commands;
 
 use App\Stubby;
-use App\Enums\ReservedKey;
+use App\Enums\SpecialVariable;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
@@ -63,19 +63,19 @@ class Generate extends Command
         }
 
 
-        /** @var string $key */
-        foreach ($stubby->interpretTokens()->pluck('key') as $key) {
-            if (array_key_exists($key, $values)) {
+        /** @var string $variable */
+        foreach ($stubby->interpretTokens()->pluck("variable") as $variable) {
+            if (array_key_exists($variable, $values)) {
                 continue;
             }
 
-            if (ReservedKey::valueExists($key)) {
+            if (SpecialVariable::valueExists($variable)) {
                 continue;
             }
 
-            $value = $this->ask("Provide a value for \"$key\"");
+            $value = $this->ask("Provide a value for \"$variable\"");
 
-            $values[$key] = $value;
+            $values[$variable] = $value;
         }
 
         $stubby->generate($filename, $values);

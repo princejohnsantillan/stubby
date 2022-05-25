@@ -4,11 +4,18 @@ namespace App\Enums;
 use App\Enums\Traits\Names;
 use Illuminate\Support\Str;
 use App\Enums\Traits\Checks;
+use App\Enums\Traits\Invokable;
 use App\Enums\Traits\Values;
 use App\Enums\Traits\Options;
 
-enum ReservedKey: string
+/**
+* @method static self FILENAME()
+* @method static self UUID()
+* @method static self ORDERED_UUID()
+*/
+enum SpecialVariable: string
 {
+    use Invokable;
     use Names;
     use Values;
     use Options;
@@ -21,13 +28,13 @@ enum ReservedKey: string
     public function interpret(?array $meta =[]): ?string
     {
         return match ($this) {
-            ReservedKey::FILENAME =>
-                Str::of(data_get($meta, ReservedKey::FILENAME->value, ""))
+            SpecialVariable::FILENAME =>
+                Str::of(data_get($meta, SpecialVariable::FILENAME(), ""))
                     ->afterLast("/")
                     ->before(".")
                     ->toString(),
-            ReservedKey::UUID => Str::uuid(),
-            ReservedKey::ORDERED_UUID => Str::orderedUuid(),
+            SpecialVariable::UUID => Str::uuid(),
+            SpecialVariable::ORDERED_UUID => Str::orderedUuid(),
             default => null,
         };
     }

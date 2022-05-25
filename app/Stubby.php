@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\Enums\ReservedKey;
+use App\Enums\SpecialVariable;
 use Illuminate\Support\Str;
 use App\Enums\StringMutation;
 use Illuminate\Support\Collection;
@@ -44,15 +44,15 @@ class Stubby
             function (string $token) {
                 $tokenParts = Str::of($token)->between("{{", "}}")->explode("|");
 
-                /** @var string $key */
-                $key = Str::of($tokenParts->get(0))->remove(" ")->toString();
+                /** @var string $variable */
+                $variable = Str::of($tokenParts->get(0))->remove(" ")->toString();
 
                 /** @var string $mutation */
                 $mutation = Str::of($tokenParts->get(1, ""));
 
                 return [
                     $token => [
-                        "key" => $key,
+                        "variable" => $variable,
                         "mutation" => StringMutation::find($mutation)
                     ]
                 ];
@@ -66,9 +66,9 @@ class Stubby
         $tokens = $this->interpretTokens();
 
         foreach ($tokens as $token => $meta) {
-            $key = $meta["key"];
+            $key = $meta["variable"];
 
-            $value = ReservedKey::tryFrom($key)?->interpret([ReservedKey::FILENAME->value => $filename]);
+            $value = SpecialVariable::tryFrom($key)?->interpret([SpecialVariable::FILENAME() => $filename]);
 
             /** @var string $value */
             $value = $value ?? data_get($values, $key);

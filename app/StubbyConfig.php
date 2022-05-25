@@ -26,7 +26,7 @@ class StubbyConfig
         return data_get($this->config, "stubs", []);
     }
 
-    public function schemaOf(string $stub): array
+    public function schemaOf(string $stub): ?array
     {
         return data_get($this->stubs(), $stub);
     }
