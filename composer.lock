@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f7cc241ddb4325292923b7f732229806",
+    "content-hash": "740b4b2d94c98a0c38aaca0080bc1761",
     "packages": [
         {
             "name": "brick/math",
@@ -1272,16 +1272,16 @@
         },
         {
             "name": "laravel-zero/framework",
-            "version": "v9.1.1",
+            "version": "v9.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel-zero/framework.git",
-                "reference": "e9bdb5e1338c4c874be9cb6c902c5fbc5a58e02e"
+                "reference": "26aa63f2fea5aea03cbfc47b2a139433162f8cd8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel-zero/framework/zipball/e9bdb5e1338c4c874be9cb6c902c5fbc5a58e02e",
-                "reference": "e9bdb5e1338c4c874be9cb6c902c5fbc5a58e02e",
+                "url": "https://api.github.com/repos/laravel-zero/framework/zipball/26aa63f2fea5aea03cbfc47b2a139433162f8cd8",
+                "reference": "26aa63f2fea5aea03cbfc47b2a139433162f8cd8",
                 "shasum": ""
             },
             "require": {
@@ -1367,7 +1367,7 @@
                 "issues": "https://github.com/laravel-zero/laravel-zero/issues",
                 "source": "https://github.com/laravel-zero/laravel-zero"
             },
-            "time": "2022-03-01T15:09:55+00:00"
+            "time": "2022-02-09T11:39:42+00:00"
         },
         {
             "name": "league/flysystem",
@@ -1892,16 +1892,16 @@
         },
         {
             "name": "nunomaduro/termwind",
-            "version": "v1.10.1",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nunomaduro/termwind.git",
-                "reference": "b63e00e448af1d418cbb07a683187685a97ca0e6"
+                "reference": "2a047696be3343fda0e4df8f47e1531a0a0bfae5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nunomaduro/termwind/zipball/b63e00e448af1d418cbb07a683187685a97ca0e6",
-                "reference": "b63e00e448af1d418cbb07a683187685a97ca0e6",
+                "url": "https://api.github.com/repos/nunomaduro/termwind/zipball/2a047696be3343fda0e4df8f47e1531a0a0bfae5",
+                "reference": "2a047696be3343fda0e4df8f47e1531a0a0bfae5",
                 "shasum": ""
             },
             "require": {
@@ -1910,25 +1910,16 @@
                 "symfony/console": "^5.3.0|^6.0.0"
             },
             "require-dev": {
-                "ergebnis/phpstan-rules": "^1.0.",
-                "illuminate/console": "^8.0|^9.0",
-                "illuminate/support": "^8.0|^9.0",
+                "ergebnis/phpstan-rules": "^0.15.3",
                 "pestphp/pest": "^1.21.0",
                 "pestphp/pest-plugin-mock": "^1.0",
-                "phpstan/phpstan": "^1.4.6",
-                "phpstan/phpstan-strict-rules": "^1.1.0",
+                "phpstan/phpstan": "^0.12.99",
+                "phpstan/phpstan-strict-rules": "^0.12.11",
                 "styleci/cli": "^1.2.0",
                 "symfony/var-dumper": "^5.2.7|^6.0.0",
-                "thecodingmachine/phpstan-strict-rules": "^1.0.0"
+                "thecodingmachine/phpstan-strict-rules": "^0.12.1"
             },
             "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Termwind\\Laravel\\TermwindServiceProvider"
-                    ]
-                }
-            },
             "autoload": {
                 "files": [
                     "src/Functions.php"
@@ -1958,7 +1949,7 @@
             ],
             "support": {
                 "issues": "https://github.com/nunomaduro/termwind/issues",
-                "source": "https://github.com/nunomaduro/termwind/tree/v1.10.1"
+                "source": "https://github.com/nunomaduro/termwind/tree/v1.3.0"
             },
             "funding": [
                 {
@@ -1974,7 +1965,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-05-12T01:36:04+00:00"
+            "time": "2022-01-12T17:14:49+00:00"
         },
         {
             "name": "phpoption/phpoption",
