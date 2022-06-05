@@ -5,3 +5,13 @@
 BACKERS.md export-ignore
 CONTRIBUTING.md export-ignore
 CHANGELOG.md export-ignore
+/config/stubs.php export-ignore
+/stubs export-ignore
+/tests export-ignore
+phpunit.xml.dist export-ignore
+/vendor export-ignore
+.editorconfig export-ignore
+.gitattributes export-ignore
+.gitignore export-ignore
+box.json export-ignore
+composer.lock export-ignore

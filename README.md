@@ -64,6 +64,6 @@ class FooBar extends Magic
 
 ## Roadmap
 - [x] Proof of Concept
-- [ ] Add tests
 - [ ] Publish as a composer package
+- [ ] Add tests
 - [ ] Make documentation
