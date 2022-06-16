@@ -2,14 +2,14 @@
 
 namespace App\Commands;
 
+use App\Enums\SpecialVariable;
+use App\Enums\StringMutation;
 use App\Stubby;
 use App\StubbyConfig;
-use App\Enums\SpecialVariable;
-use Illuminate\Support\Str;
-use App\Enums\StringMutation;
-use Illuminate\Support\Facades\File;
-use LaravelZero\Framework\Commands\Command;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
+use LaravelZero\Framework\Commands\Command;
 
 class Make extends Command
 {
@@ -39,7 +39,7 @@ class Make extends Command
      */
     public function handle()
     {
-        $config = new StubbyConfig($this->option('config') ?? "stubs/config.json");
+        $config = new StubbyConfig($this->option('config') ?? 'stubs/config.json');
 
         /** @var string $build */
         $build = $this->argument('build');
@@ -61,8 +61,8 @@ class Make extends Command
 
         $values = $config->valuesOf($build);
 
-        foreach (Str::of($this->option("values") ?? "")->explode(",")->filter() as $value) {
-            $parts = Str::of($value)->explode(":")->filter();
+        foreach (Str::of($this->option('values') ?? '')->explode(',')->filter() as $value) {
+            $parts = Str::of($value)->explode(':')->filter();
 
             /** @var string $key */
             $key = $parts->get(0);
@@ -85,7 +85,7 @@ class Make extends Command
             }
 
             /** @var string $variable */
-            foreach ($stubby->interpretTokens()->pluck("variable") as $variable) {
+            foreach ($stubby->interpretTokens()->pluck('variable') as $variable) {
                 if (array_key_exists($variable, $values)) {
                     continue;
                 }
@@ -106,7 +106,7 @@ class Make extends Command
             $fileExtension = $config->fileExtensionFrom($fileConfig);
 
             // File Name
-            $filename = Str::of($inputFilename)->afterLast("/")->before($fileExtension)->trim()->toString();
+            $filename = Str::of($inputFilename)->afterLast('/')->before($fileExtension)->trim()->toString();
 
             $filenameCase = $config->filenameCaseFrom($fileConfig);
 
@@ -117,7 +117,7 @@ class Make extends Command
             // Filename Template
             $filenameTemplate = $config->filenameTemplateFrom($fileConfig);
 
-            $filename =  $filenameTemplate === null
+            $filename = $filenameTemplate === null
                 ? $filename
                 : Str::of($filenameTemplate)->replace(SpecialVariable::FILENAME(), $filename)->toString();
 

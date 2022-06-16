@@ -1,18 +1,19 @@
 <?php
+
 namespace App\Enums;
 
-use App\Enums\Traits\Names;
-use Illuminate\Support\Str;
 use App\Enums\Traits\Checks;
 use App\Enums\Traits\Invokable;
-use App\Enums\Traits\Values;
+use App\Enums\Traits\Names;
 use App\Enums\Traits\Options;
+use App\Enums\Traits\Values;
+use Illuminate\Support\Str;
 
 /**
-* @method static self FILENAME()
-* @method static self UUID()
-* @method static self ORDERED_UUID()
-*/
+ * @method static self FILENAME()
+ * @method static self UUID()
+ * @method static self ORDERED_UUID()
+ */
 enum SpecialVariable: string
 {
     use Invokable;
@@ -21,21 +22,20 @@ enum SpecialVariable: string
     use Options;
     use Checks;
 
-    case FILENAME = "@FILENAME";
-    case UUID = "@UUID";
-    case ORDERED_UUID = "@ORDERED_UUID";
+    case FILENAME = '@FILENAME';
+    case UUID = '@UUID';
+    case ORDERED_UUID = '@ORDERED_UUID';
 
-    public function interpret(?array $meta =[]): ?string
+    public function interpret(?array $meta = []): ?string
     {
         return match ($this) {
-            SpecialVariable::FILENAME =>
-                Str::of(data_get($meta, SpecialVariable::FILENAME(), ""))
-                    ->afterLast("/")
-                    ->before(".")
+            SpecialVariable::FILENAME => Str::of(data_get($meta, SpecialVariable::FILENAME(), ''))
+                    ->afterLast('/')
+                    ->before('.')
                     ->toString(),
-            SpecialVariable::UUID => Str::uuid(),
+            SpecialVariable::UUID         => Str::uuid(),
             SpecialVariable::ORDERED_UUID => Str::orderedUuid(),
-            default => null,
+            default                       => null,
         };
     }
 }
