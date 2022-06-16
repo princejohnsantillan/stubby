@@ -3,12 +3,12 @@
 namespace App;
 
 use App\Enums\SpecialVariable;
-use Illuminate\Support\Str;
 use App\Enums\StringMutation;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Stringable;
-use Illuminate\Support\Facades\File;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
+use Illuminate\Support\Stringable;
 
 class Stubby
 {
@@ -17,13 +17,13 @@ class Stubby
     public function __construct(private string $stub)
     {
         if (!File::exists($stub)) {
-            throw new FileNotFoundException;
+            throw new FileNotFoundException();
         }
 
         $this->content = Str::of(File::get($stub));
     }
 
-    public static function stub(string $stub):self
+    public static function stub(string $stub): self
     {
         return new static($stub);
     }
@@ -42,19 +42,19 @@ class Stubby
     {
         return $this->getRawTokens()->mapWithKeys(
             function (string $token) {
-                $tokenParts = Str::of($token)->between("{{", "}}")->explode("|");
+                $tokenParts = Str::of($token)->between('{{', '}}')->explode('|');
 
                 /** @var string $variable */
-                $variable = Str::of($tokenParts->get(0))->remove(" ")->toString();
+                $variable = Str::of($tokenParts->get(0))->remove(' ')->toString();
 
                 /** @var string $mutation */
-                $mutation = Str::of($tokenParts->get(1, ""));
+                $mutation = Str::of($tokenParts->get(1, ''));
 
                 return [
                     $token => [
-                        "variable" => $variable,
-                        "mutation" => StringMutation::find($mutation)
-                    ]
+                        'variable' => $variable,
+                        'mutation' => StringMutation::find($mutation),
+                    ],
                 ];
             }
         );
@@ -66,7 +66,7 @@ class Stubby
         $tokens = $this->interpretTokens();
 
         foreach ($tokens as $token => $meta) {
-            $key = $meta["variable"];
+            $key = $meta['variable'];
 
             $value = SpecialVariable::tryFrom($key)?->interpret([SpecialVariable::FILENAME() => $filename]);
 
